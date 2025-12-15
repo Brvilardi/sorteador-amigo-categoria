@@ -162,6 +162,64 @@ yarn build
 
 Os arquivos otimizados serão gerados na pasta `dist/` e podem ser servidos por qualquer servidor web estático.
 
+## ☁️ Deploy para AWS
+
+A aplicação inclui scripts automatizados para deploy na AWS usando S3 e CloudFront:
+
+### Deploy Inicial
+
+```bash
+npm run deploy
+```
+
+Este comando irá:
+- ✅ Construir a aplicação para produção
+- ✅ Criar bucket S3 com hosting de website estático
+- ✅ Configurar distribuição CloudFront para CDN global
+- ✅ Fazer upload dos arquivos otimizados
+- ✅ Fornecer a URL final da aplicação com HTTPS
+
+### Atualizar Deploy Existente
+
+Para atualizar a aplicação após fazer mudanças:
+
+```bash
+npm run deploy:update
+```
+
+Este comando faz upload apenas dos arquivos alterados e invalida o cache do CloudFront.
+
+### Remover Deploy
+
+Para remover todos os recursos AWS:
+
+```bash
+npm run deploy:teardown
+```
+
+### Pré-requisitos para Deploy
+
+1. **AWS CLI** instalado e configurado:
+   ```bash
+   aws configure
+   ```
+
+2. **Credenciais AWS** com permissões para:
+   - S3 (criar buckets, fazer upload)
+   - CloudFront (criar distribuições)
+   - CloudFormation (criar/gerenciar stacks)
+
+3. **Node.js** e **npm** instalados
+
+### Documentação Completa
+
+Veja [deployment/README.md](deployment/README.md) para:
+- Guia detalhado de configuração
+- Solução de problemas
+- Estimativas de custo
+- Configuração de domínio customizado
+- Práticas de segurança
+
 ## 📝 Exemplos de Uso
 
 ### Cenário: Confraternização de Empresa
@@ -188,10 +246,16 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## ⚡ Comandos Disponíveis
 
+### Desenvolvimento
 - `npm run dev` - Inicia servidor de desenvolvimento
 - `npm run build` - Gera build de produção  
 - `npm run preview` - Preview do build de produção
 - `npm run lint` - Executa o linter
+
+### Deploy AWS
+- `npm run deploy` - Deploy completo para AWS (S3 + CloudFront)
+- `npm run deploy:update` - Atualiza deploy existente
+- `npm run deploy:teardown` - Remove todos os recursos AWS
 
 ## 📞 Suporte
 
