@@ -27,7 +27,7 @@ const AdminResults = ({ drawData }) => {
   }
 
   const getParticipantLink = (resultId) => {
-    return `${window.location.origin}/participant/${resultId}`
+    return `${window.location.origin}${window.location.pathname}#/participant/${resultId}`
   }
 
   const formatDate = (dateString) => {

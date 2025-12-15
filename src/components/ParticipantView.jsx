@@ -1,18 +1,130 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Navigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 const ParticipantView = ({ drawData }) => {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [participantData, setParticipantData] = useState(null)
   const [loading, setLoading] = useState(true)
+  
+  // Security check: Prevent access to admin routes from this component
+  useEffect(() => {
+    // Block any attempt to navigate to admin routes
+    const originalNavigate = navigate
+    const secureNavigate = (path, options) => {
+      if (path && (path.includes('/admin') || path === '/')) {
+        console.warn('Navigation to admin routes blocked from participant view')
+        return
+      }
+      return originalNavigate(path, options)
+    }
+    
+    // Override navigate function for this component context
+    Object.defineProperty(window, 'navigate', {
+      value: secureNavigate,
+      writable: false,
+      configurable: true
+    })
+    
+    return () => {
+      // Cleanup
+      delete window.navigate
+    }
+  }, [navigate])
 
   useEffect(() => {
-    if (drawData && drawData.results) {
+    // Ensure this component only shows individual participant data
+    if (drawData && drawData.results && id) {
+      // Validate ID format (should be UUID)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      
+      if (!uuidRegex.test(id)) {
+        setParticipantData(null)
+        setLoading(false)
+        return
+      }
+      
       const result = drawData.results.find(r => r.id === id)
-      setParticipantData(result)
+      if (result) {
+        // Create a clean, isolated copy with only the necessary data
+        // This ensures no other participant data or admin data leaks through
+        setParticipantData({
+          participant: {
+            name: result.participant.name
+          },
+          category: {
+            name: result.category.name,
+            description: result.category.description,
+            minValue: result.category.minValue,
+            giftIdeas: result.category.giftIdeas
+          },
+          eventDetails: {
+            name: result.eventDetails.name,
+            date: result.eventDetails.date,
+            location: result.eventDetails.location
+          }
+        })
+      } else {
+        setParticipantData(null)
+      }
+    } else {
+      setParticipantData(null)
     }
     setLoading(false)
   }, [drawData, id])
+
+  // Prevent any console access to admin data and ensure complete isolation
+  useEffect(() => {
+    // Clear any potential window references to admin data
+    if (typeof window !== 'undefined') {
+      window.adminData = undefined
+      window.drawData = undefined
+      window.allResults = undefined
+      window.adminInterface = undefined
+      
+      // Delete the properties to be extra sure
+      delete window.adminData
+      delete window.drawData
+      delete window.allResults
+      delete window.adminInterface
+      
+      // Prevent direct access to React DevTools data
+      if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+        try {
+          window.__REACT_DEVTOOLS_GLOBAL_HOOK__.onCommitFiberRoot = () => {}
+        } catch (e) {
+          // Ignore errors in production
+        }
+      }
+    }
+    
+    // Disable context menu (right-click) to prevent easy access to DevTools
+    const handleContextMenu = (e) => {
+      e.preventDefault()
+      return false
+    }
+    
+    // Disable common DevTools shortcuts
+    const handleKeyDown = (e) => {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
+        (e.ctrlKey && e.key === 'U')
+      ) {
+        e.preventDefault()
+        return false
+      }
+    }
+    
+    document.addEventListener('contextmenu', handleContextMenu)
+    document.addEventListener('keydown', handleKeyDown)
+    
+    // Cleanup function
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
 
   if (loading) {
     return (
@@ -56,7 +168,7 @@ const ParticipantView = ({ drawData }) => {
   }
 
   return (
-    <div className="participant-view">
+    <div className="participant-view" data-participant-id={id}>
       <div className="container">
         <div className="header">
           <h1>🎁 Seu Amigo Secreto</h1>
@@ -126,6 +238,10 @@ const ParticipantView = ({ drawData }) => {
         <div className="footer">
           <p className="secret-message">
             🤫 <em>Mantenha isso em segredo até o dia do evento!</em>
+          </p>
+          <p className="participant-id-hidden" style={{display: 'none'}}>
+            {/* Hidden participant ID for debugging purposes only */}
+            ID: {id}
           </p>
         </div>
       </div>

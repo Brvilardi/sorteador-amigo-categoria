@@ -187,6 +187,51 @@
   padding: 20px 0;
 }
 
+/* Security: Hide all admin elements in participant view */
+.participant-view .admin-interface,
+.participant-view .admin-results,
+.participant-view .btn-secondary,
+.participant-view .header-actions,
+.participant-view .action-buttons,
+.participant-view [data-admin],
+.participant-view .results-table,
+.participant-view .categories-summary,
+.participant-view .admin-link,
+.participant-view .new-draw-btn,
+.participant-view .view-results-btn,
+.participant-view .execute-btn,
+.participant-view .admin-btn,
+.participant-view [class*="admin"],
+.participant-view [id*="admin"],
+.participant-view [href*="/admin"],
+.participant-view [href*="results"],
+.participant-view button[onclick*="admin"],
+.participant-view button[onclick*="navigate"],
+.participant-view a[onclick*="admin"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Prevent any admin navigation in participant view */
+.participant-view a[href*="/admin"],
+.participant-view a[href*="results"],
+.participant-view button[onclick*="admin"],
+.participant-view .admin-link,
+.participant-view [data-navigate] {
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
 .participant-view .container {
   max-width: 800px;
 }
