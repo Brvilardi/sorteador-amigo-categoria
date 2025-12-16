@@ -213,12 +213,18 @@ npm run deploy:teardown
 
 ### Documentação Completa
 
-Veja [deployment/README.md](deployment/README.md) para:
-- Guia detalhado de configuração
-- Solução de problemas
-- Estimativas de custo
+📖 **[Guia Completo de Deploy AWS](deployment/DEPLOYMENT_GUIDE.md)** - Documentação detalhada incluindo:
+- Visão geral da arquitetura (S3 + CloudFront + React Router)
+- Pré-requisitos e configuração
+- Instruções passo a passo
+- Testes automatizados de deployment
+- Solução de problemas comuns
+- Estimativas de custo AWS
 - Configuração de domínio customizado
-- Práticas de segurança
+
+Para informações técnicas adicionais:
+- [deployment/README.md](deployment/README.md) - Práticas de segurança e otimizações
+- [deployment/ARCHITECTURE.md](deployment/ARCHITECTURE.md) - Detalhes da infraestrutura
 
 ## 📝 Exemplos de Uso
 
@@ -255,6 +261,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ### Deploy AWS
 - `npm run deploy` - Deploy completo para AWS (S3 + CloudFront)
 - `npm run deploy:update` - Atualiza deploy existente
+- `npm run deploy:test` - Testa deployment existente
 - `npm run deploy:teardown` - Remove todos os recursos AWS
 
 ## 📞 Suporte

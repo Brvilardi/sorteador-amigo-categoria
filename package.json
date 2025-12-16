@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "deploy": "bash deployment/deploy.sh",
     "deploy:update": "bash deployment/update.sh",
-    "deploy:teardown": "bash deployment/teardown.sh"
+    "deploy:teardown": "bash deployment/teardown.sh",
+    "deploy:test": "bash deployment/test-deployment.sh"
   },
   "dependencies": {
     "react": "^18.2.0",

@@ -37,7 +37,7 @@ Resources:
         - Key: ManagedBy
           Value: CloudFormation
 
-  # S3 Bucket Policy for public read access
+  # S3 Bucket Policy for public read access (required for website endpoint)
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -49,13 +49,6 @@ Resources:
             Principal: '*'
             Action: 's3:GetObject'
             Resource: !Sub '${WebsiteBucket.Arn}/*'
-
-  # CloudFront Origin Access Identity (for secure S3 access)
-  CloudFrontOAI:
-    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: !Sub 'OAI for ${ProjectName}'
 
   # CloudFront Distribution
   CloudFrontDistribution:
@@ -70,18 +63,14 @@ Resources:
         HttpVersion: http2
         PriceClass: PriceClass_100
         
-        # Origins
+        # Origins - Using S3 website endpoint for proper SPA routing
         Origins:
           - Id: S3Origin
-            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
-            S3OriginConfig:
-              OriginAccessIdentity: ''
-            # Use website endpoint for proper error handling
+            DomainName: !Select [2, !Split ['/', !GetAtt WebsiteBucket.WebsiteURL]]
             CustomOriginConfig:
               HTTPPort: 80
               HTTPSPort: 443
               OriginProtocolPolicy: http-only
-            DomainName: !Select [2, !Split ['/', !GetAtt WebsiteBucket.WebsiteURL]]
         
         # Default Cache Behavior
         DefaultCacheBehavior:
